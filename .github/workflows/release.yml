@@ -15,6 +15,8 @@ on:
   push:
     branches:
       - 'master'
+      # 在复刻的开发分支上直接构建，无需提交 PR
+      - 'claude/**'
     tags:
       - v*
       - '!v*apk'
@@ -141,7 +143,7 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :UIDeviceFamily' "$APP_PATH/Info.plist" || true
           mkdir -p build/ipa/Payload
           cp -R "$APP_PATH" build/ipa/Payload/
-          IPA_NAME="${PACKAGE_NAME}_${app_version}.ipa"
+          IPA_NAME="${PACKAGE_NAME}_${app_version//+/_}.ipa"
           (cd build/ipa && COPYFILE_DISABLE=1 zip -qry "../${IPA_NAME}" Payload)
           unzip -tq "build/${IPA_NAME}"
           (cd build && shasum -a 256 "${IPA_NAME}" > "${IPA_NAME}.sha256")
